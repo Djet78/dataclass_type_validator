@@ -13,6 +13,8 @@ class TypeValidator:
 
     def __init__(self):
         self.errors: list = []
+        # TODO add support for Optional[T]
+        # TODO add support for str | None
         self.validators_mapping = {
             str: self.primitives_validator,
             bool: self.primitives_validator,
@@ -37,7 +39,8 @@ class TypeValidator:
         exp_types = inspect.get_annotations(cls.__class__)
         for attr_name, attr_value in asdict(cls).items():
             lookup_type = get_origin(exp_types[attr_name]) or exp_types[attr_name]
-            self.validators_mapping[lookup_type](attr_name, attr_value, exp_types[attr_name])
+            type_validator = self.validators_mapping.get(lookup_type, self.any_validator)
+            type_validator(attr_name, attr_value, exp_types[attr_name])
 
         res: bool = False if self.errors else True
         return res, self.errors

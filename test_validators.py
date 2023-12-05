@@ -4,7 +4,7 @@ from typing import List, Set, Mapping, Union, Any, Dict, Tuple, Final, Annotated
 import pytest
 
 from .base_validator import TypeValidator
-from .base_dataclass import BaseDataclass
+from .base_dataclass import BaseDataclass, StrictDataclass
 from .validators import NotEmpty, ValueRange, Options, LimitedLength
 
 
@@ -171,10 +171,19 @@ def test_type_checker(param_type, param_value, exp_res, exp_errors):
 
 
 @pytest.mark.internal
-def test_base_dtcls_raises():
+def test_strict_dtcls_raises():
     @dataclass
-    class TestDataClass(BaseDataclass):
+    class TestDataClass(StrictDataclass):
         test_variable: str = 1
 
     with pytest.raises(ValueError):
         TestDataClass()
+
+
+@pytest.mark.internal
+def test_base_dtcls_rnot_aises():
+    @dataclass
+    class TestDataClass(BaseDataclass):
+        test_variable: str = 1
+
+    TestDataClass()
