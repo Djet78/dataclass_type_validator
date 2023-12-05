@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import List, Set, Mapping, Union, Any, Dict, Tuple, Final, Annotated
+from typing import List, Set, Mapping, Union, Any, Dict, Tuple, Final, Annotated, Optional
 
 import pytest
 
@@ -155,6 +155,12 @@ from .validators import NotEmpty, ValueRange, Options, LimitedLength
     (Annotated[str, NotEmpty(), LimitedLength(10)], '1', True, []),
     (Annotated[str, NotEmpty(), LimitedLength(10)], '1234567890', True, []),
     (Annotated[str, NotEmpty(), LimitedLength(10)], '12345678901', False, ["""Expected that attr "test_variable" would be of type "typing.Annotated[str, NotEmpty(), LimitedLength(length=10)]". Value 12345678901, of type "<class \'str\'>" was passed.Value "12345678901" length should be <= 10. Actual is 11"""]),
+    (Optional[str], 'valid_str', True, []),
+    (Optional[str], None, True, []),
+    (Optional[str], 1, False, ["""Expected that attr "test_variable" would be of type "(<class \'str\'>, <class \'NoneType\'>)". Value 1, of type "<class \'int\'>" was passed."""]),
+    (str | None, 'valid_str', True, []),
+    (str | None, None, True, []),
+    (str | None, 1, False, ["""Expected that attr "test_variable" would be of type "(<class \'str\'>, <class \'NoneType\'>)". Value 1, of type "<class \'int\'>" was passed."""]),
 ])
 def test_type_checker(param_type, param_value, exp_res, exp_errors):
     @dataclass

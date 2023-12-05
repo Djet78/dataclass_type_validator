@@ -2,7 +2,7 @@ import inspect
 from collections.abc import Mapping
 from dataclasses import dataclass, asdict
 from types import UnionType
-from typing import Union, Any, Final, Annotated, get_origin, get_args
+from typing import Union, Any, Final, Annotated, Optional, get_origin, get_args
 
 
 # TODO Add support for following annotation types
@@ -13,8 +13,6 @@ class TypeValidator:
 
     def __init__(self):
         self.errors: list = []
-        # TODO add support for Optional[T]
-        # TODO add support for str | None
         self.validators_mapping = {
             str: self.primitives_validator,
             bool: self.primitives_validator,
@@ -31,6 +29,7 @@ class TypeValidator:
             UnionType: self.union_validator,
             Any: self.any_validator,
             Annotated: self.annotated_validator,
+            Optional: self.union_validator,
         }
 
     def check_types(self, cls: dataclass) -> tuple[bool, list[str]]:
