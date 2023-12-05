@@ -11,13 +11,17 @@ class BaseDataclass:
     def __post_init__(self):
         if self.ENFORCE_VALIDATION is True:
             self.check_properties_type()
-            # TODO add an call for any validation methods that occur for a field.
-            #  Match following naming_convention: `def validate_<name_of_a_prop>(self)`
+            self.run_prop_validator_funcs()
 
     def check_properties_type(self) -> None:
         res, errors = self.TYPE_VALIDATOR.check_types(self)
         if res is False:
             raise ValueError(errors)
+
+    def run_prop_validator_funcs(self) -> None:
+        for param in self.as_dict().keys():
+            validator_func = getattr(self, f'{param}_validator', None)
+            validator_func()
 
     def dict2object(self, kwargs: dict) -> None:
         for param, value in kwargs.items():
@@ -29,9 +33,6 @@ class BaseDataclass:
 
     def as_tuple(self) -> tuple:
         return astuple(self)
-
-    def check_params_type(self) -> None:
-        self.TYPE_VALIDATOR.check_types(self)
 
 
 @dataclass

@@ -187,9 +187,36 @@ def test_strict_dtcls_raises():
 
 
 @pytest.mark.internal
-def test_base_dtcls_rnot_aises():
+def test_base_dtcls_not_raises():
     @dataclass
     class TestDataClass(BaseDataclass):
         test_variable: str = 1
 
     TestDataClass()
+
+
+@pytest.mark.internal
+def test_strict_dtcls_calls_custom_prop_validators_valid_value():
+    @dataclass
+    class TestDataClass(StrictDataclass):
+        test_variable: int
+
+        def test_variable_validator(self):
+            if self.test_variable == 0:
+                raise ValueError("test_variable could not be 0")
+
+    TestDataClass(1)
+
+
+@pytest.mark.internal
+def test_strict_dtcls_calls_custom_prop_validators_with_invalid_value():
+    @dataclass
+    class TestDataClass(StrictDataclass):
+        test_variable: int
+
+        def test_variable_validator(self):
+            if self.test_variable == 0:
+                raise ValueError("test_variable could not be 0")
+
+    with pytest.raises(ValueError):
+        TestDataClass(0)
