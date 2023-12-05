@@ -9,7 +9,7 @@ from .validators import NotEmpty, ValueRange, Options, LimitedLength
 
 
 @pytest.mark.internal
-@pytest.mark.parametrize('param_type, param_value, exp_res, exp_errors', [
+@pytest.mark.parametrize('param_type, param_value, is_obj_valid, exp_errors', [
     (str, 'test_string', True, []),
     (str, '', True, []),
     (str, 0, False, ["""Expected that attr "test_variable" would be of type "<class \'str\'>". Value 0, of type "<class \'int\'>" was passed."""]),
@@ -162,7 +162,7 @@ from .validators import NotEmpty, ValueRange, Options, LimitedLength
     (str | None, None, True, []),
     (str | None, 1, False, ["""Expected that attr "test_variable" would be of type "(<class \'str\'>, <class \'NoneType\'>)". Value 1, of type "<class \'int\'>" was passed."""]),
 ])
-def test_type_checker(param_type, param_value, exp_res, exp_errors):
+def test_type_checker(param_type, param_value, is_obj_valid, exp_errors):
     @dataclass
     class TestDataClass:
         test_variable: param_type = param_value
@@ -170,10 +170,10 @@ def test_type_checker(param_type, param_value, exp_res, exp_errors):
     tdc = TestDataClass()
     checker = TypeValidator()
     act_res, act_errors = checker.check_types(tdc)
-    assert act_res == exp_res and act_errors == exp_errors, \
+    assert act_res == is_obj_valid and act_errors == exp_errors, \
         (f'Case failed: {param_type} = {param_value}.\n'
          f'Actual res: {act_res} - {act_errors}\n'
-         f'Expected res: {exp_res} - {exp_errors}')
+         f'Expected res: {is_obj_valid} - {exp_errors}')
 
 
 @pytest.mark.internal
@@ -211,7 +211,7 @@ def test_strict_dtcls_calls_custom_prop_validators_valid_value():
 @pytest.mark.internal
 def test_strict_dtcls_calls_custom_prop_validators_with_invalid_value():
     @dataclass
-    class TestDataClass(StrictDataclass):
+    class NotZero(StrictDataclass):
         test_variable: int
 
         def test_variable_validator(self):
@@ -219,4 +219,4 @@ def test_strict_dtcls_calls_custom_prop_validators_with_invalid_value():
                 raise ValueError("test_variable could not be 0")
 
     with pytest.raises(ValueError):
-        TestDataClass(0)
+        NotZero(0)

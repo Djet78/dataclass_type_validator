@@ -2,7 +2,7 @@ import inspect
 from collections.abc import Mapping
 from dataclasses import dataclass, asdict
 from types import UnionType
-from typing import Union, Any, Final, Annotated, Optional, get_origin, get_args
+from typing import Union, Any, Final, Annotated, Optional, get_origin, get_args, Callable
 
 
 # TODO Add support for following annotation types
@@ -10,6 +10,7 @@ from typing import Union, Any, Final, Annotated, Optional, get_origin, get_args
 #  (Need to define how to pass correct expected type. According to data nesting and annotation syntax logic.)
 # c: List[int] | set[str] = 'test'
 class TypeValidator:
+    """Validator of a dataclass properties."""
 
     def __init__(self):
         self.errors: list = []
@@ -33,6 +34,12 @@ class TypeValidator:
         }
 
     def check_types(self, cls: dataclass) -> tuple[bool, list[str]]:
+        """Validate dataclass against params annotation.
+
+        Method iterates over all params, and apply needed verification from `self.validators_mapping`.
+        This validation can be updated/extended by instancing class,
+            and calling: TypeValidator().update_validators({_type: Any, validator: Callable})
+        """
         self.errors = []
 
         exp_types = inspect.get_annotations(cls.__class__)
@@ -149,8 +156,13 @@ class TypeValidator:
                 self.put_error(attr_name, val, valid_vals)
 
     def put_error(self, attr_name: str, attr_value, exp_type, extra_msg=''):
+        """Template method for adding errors"""
         self.errors.append(
             f'Expected that attr "{attr_name}" would be of type "{exp_type}". '
             f'Value {attr_value}, of type "{type(attr_value)}" was passed.'
             f'{extra_msg}'
         )
+
+    def update_validators(self, _type: Any, validator: Callable) -> None:
+        """Extend/update existing validators in self.validators_mapping"""
+        self.validators_mapping.update({_type: validator})
