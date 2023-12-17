@@ -1,15 +1,16 @@
 # Dataclass Type Validator
 Provides base api for verification of dataclass params, based on specified params annotation type. 
 
-Installation: 
+#### Installation: 
 1. Python 3.12.0: https://www.python.org/downloads/release/python-3120/
 2. Install required packages: `pip install -r requirements.txt` 
 
-Run tests:
+#### Run tests. 
+Coverage will be generated into html report.
 1. From within a folder: `pytest`
 2. As a part of another project: `pytest -m "internal"`
 
-Usage: 
+#### Usage: 
 1. Use `BaseDataclass` if you want to get specification freedom of your data. 
 This class doesn't enforce validation of passed dataclass params. To verify params you need manually call `<YourDataClassInst>.check_properties_type()`
 ```python
