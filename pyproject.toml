@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "type-validator"
+version = "0.1.0"
+description = "Provides API to extend default dataclsses. This api allow to validate dataclass fields against field type."
+authors = ["Viacheslav <vacheslavuslistyj@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+
+[tool.poetry.group.test.dependencies]
+pytest = "^7.4.3"
+pytest-cov = "^4.1.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
