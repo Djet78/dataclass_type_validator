@@ -3,9 +3,9 @@ from typing import List, Set, Mapping, Union, Any, Dict, Tuple, Final, Annotated
 
 import pytest
 
-from .base_validator import TypeValidator
-from .base_dataclass import BaseDataclass, StrictDataclass
-from .validators import NotEmpty, ValueRange, Options, LimitedLength
+from type_validator.base_validator import TypeValidator
+from type_validator.base_dataclass import BaseDataclass, StrictDataclass
+from type_validator.validators import NotEmpty, ValueRange, Options, LimitedLength
 
 
 @pytest.mark.internal
