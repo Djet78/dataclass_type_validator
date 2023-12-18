@@ -6,6 +6,7 @@ from .base_validator import TypeValidator
 @dataclass
 class BaseDataclass:
     """Extension class, that add ability to a dataclass to verify own properties values."""
+
     TYPE_VALIDATOR = TypeValidator()
     ENFORCE_VALIDATION = False
 
@@ -55,4 +56,5 @@ class BaseDataclass:
 @dataclass
 class StrictDataclass(BaseDataclass):
     """Extension class, that enforce dataclass validation of own properties values."""
+
     ENFORCE_VALIDATION = True

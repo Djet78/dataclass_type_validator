@@ -6,7 +6,6 @@ from typing import Any
 
 @dataclass
 class ValidatorBase(ABC):
-
     @abstractmethod
     def validate(self, value: Any) -> tuple[bool, str]:
         pass
@@ -19,13 +18,13 @@ class ValueRange(ValidatorBase):
 
     def validate(self, value: int | float) -> tuple[bool, str]:
         res = self.lo <= value <= self.hi
-        return res, '' if res is True else (f'Value "{value}" should met this condition: '
-                                            f'{self.lo} <= <value> <= {self.hi}.')
+        return res, '' if res is True else (
+            f'Value "{value}" should met this condition: ' f'{self.lo} <= <value> <= {self.hi}.'
+        )
 
 
 @dataclass
 class NotEmpty(ValidatorBase):
-
     def validate(self, value: Sized) -> tuple[bool, str]:
         res = len(value) > 0
         return res, '' if res is True else f'Value "{value}" should be not empty.'
