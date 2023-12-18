@@ -1,8 +1,8 @@
 import inspect
-from collections.abc import Mapping
+from collections.abc import Mapping, Callable
 from dataclasses import dataclass, asdict
 from types import UnionType
-from typing import Union, Any, Final, Annotated, Optional, get_origin, get_args, Callable
+from typing import Union, Any, Final, Annotated, Optional, get_origin, get_args
 
 
 # TODO Add support for following annotation types
@@ -48,7 +48,7 @@ class TypeValidator:
             type_validator = self.validators_mapping.get(lookup_type, self.any_validator)
             type_validator(attr_name, attr_value, exp_types[attr_name])
 
-        res: bool = False if self.errors else True
+        res: bool = not self.errors
         return res, self.errors
 
     def primitives_validator(self, attr_name: str, attr_value, exp_type) -> None:
@@ -92,14 +92,14 @@ class TypeValidator:
         # Get values from UnionType. Handles pipe (|) from: set[int | str | float]
         allowed_entries = set(get_args(arg) or arg for arg in lookup_args)
 
-        if not isinstance(attr_value, (list, set)):
+        if not isinstance(attr_value, list | set):
             self.put_error(attr_name, attr_value, exp_type)
             return
 
         if Any in allowed_entries:
             return
 
-        if not all((isinstance(act_val, tuple(allowed_entries)) for act_val in attr_value)):
+        if not all(isinstance(act_val, tuple(allowed_entries)) for act_val in attr_value):
             self.put_error(attr_name, attr_value, exp_type)
 
     def tuple_validator(self, attr_name: str, attr_value, exp_type) -> None:
@@ -115,7 +115,7 @@ class TypeValidator:
             return
 
         if Ellipsis not in lookup_args:  # tuple[int, ...]
-            for act_val, exp_index_type in zip(attr_value, lookup_args):
+            for act_val, exp_index_type in zip(attr_value, lookup_args, strict=False):
                 exp_index_type = get_args(exp_index_type) or exp_index_type
                 if exp_index_type == Any:
                     continue
@@ -132,7 +132,8 @@ class TypeValidator:
         origin = get_origin(exp_type)
         lookup_args = get_args(exp_type) or exp_type
 
-        # Means that annotation don't have specified values stored in the collection. Passed simple: dict / Mapping / Dict
+        # Means that annotation don't have specified values stored in the collection.
+        #   Passed simple: dict / Mapping / Dict
         if not isinstance(lookup_args, tuple):
             self.primitives_validator(attr_name, attr_value, exp_type)
             return

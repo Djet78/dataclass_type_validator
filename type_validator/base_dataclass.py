@@ -26,7 +26,7 @@ class BaseDataclass:
         Validators should be defined as follows: `def <param_name>_validator(self) -> None:...`
         Also, user should define how he want to handle an errors. Raise, or store it somewhere for a while.
         """
-        for param in self.as_dict().keys():
+        for param in self.as_dict():
             validator_func = getattr(self, f'{param}_validator', None)
             validator_func()
 

@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
+from collections.abc import Sized
 from dataclasses import dataclass
-from typing import Sized, Any
+from typing import Any
 
 
 @dataclass
@@ -18,14 +19,15 @@ class ValueRange(ValidatorBase):
 
     def validate(self, value: int | float) -> tuple[bool, str]:
         res = self.lo <= value <= self.hi
-        return res, '' if res is True else f'Value "{value}" should met this condition: {self.lo} <= <value> <= {self.hi}.'
+        return res, '' if res is True else (f'Value "{value}" should met this condition: '
+                                            f'{self.lo} <= <value> <= {self.hi}.')
 
 
 @dataclass
 class NotEmpty(ValidatorBase):
 
     def validate(self, value: Sized) -> tuple[bool, str]:
-        res = True if len(value) > 0 else False
+        res = len(value) > 0
         return res, '' if res is True else f'Value "{value}" should be not empty.'
 
 
@@ -47,5 +49,5 @@ class LimitedLength(ValidatorBase):
             raise ValueError('length should bigger than 0.')
 
     def validate(self, value: Sized) -> tuple[bool, str]:
-        res = True if len(value) <= self.length else False
+        res = len(value) <= self.length
         return res, '' if res is True else f'Value "{value}" length should be <= {self.length}. Actual is {len(value)}'
