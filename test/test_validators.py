@@ -9,6 +9,7 @@ from type_validator.validators import NotEmpty, ValueRange, Options, LimitedLeng
 
 
 @pytest.mark.internal
+# @pytest.mark.flaky(reruns=5)
 @pytest.mark.parametrize('param_type, param_value, is_obj_valid, exp_errors', [
     (str, 'test_string', True, []),
     (str, '', True, []),
@@ -76,7 +77,7 @@ from type_validator.validators import NotEmpty, ValueRange, Options, LimitedLeng
     (Dict[int | str, str], field(default_factory=lambda: {('tuple',): 'val'}), False, ["""Expected that attr "test_variable" would be of type "(<class \'int\'>, <class \'str\'>)". Value (\'tuple\',), of type "<class \'tuple\'>" was passed."""]),
     (Dict[str, int | str], field(default_factory=lambda: {'key': 'val'}), True, []),
     (Dict[str, int | str], field(default_factory=lambda: {'key': 2}), True, []),
-    (Dict[str, int | str], field(default_factory=lambda: {'key': []}), False, ["""Expected that attr "test_variable" would be of type "(<class \'str\'>, <class \'int\'>)". Value [], of type "<class \'list\'>" was passed."""]),
+    (Dict[str, int | str], field(default_factory=lambda: {'key': []}), False, ["""Expected that attr "test_variable" would be of type "(<class \'int\'>, <class \'str\'>)". Value [], of type "<class \'list\'>" was passed."""]),
     (Mapping[int | str, str], field(default_factory=lambda: {1: 'val'}), True, []),
     (Mapping[int | str, str], field(default_factory=lambda: {'key': 'val'}), True, []),
     (Mapping[int | str, str], field(default_factory=lambda: {('tuple',): 'val'}), False, ["""Expected that attr "test_variable" would be of type "(<class \'int\'>, <class \'str\'>)". Value (\'tuple\',), of type "<class \'tuple\'>" was passed."""]),
@@ -136,12 +137,12 @@ from type_validator.validators import NotEmpty, ValueRange, Options, LimitedLeng
     (Annotated[set, NotEmpty()], field(default_factory=lambda: set()), False, ["""Expected that attr "test_variable" would be of type "typing.Annotated[set, NotEmpty()]". Value set(), of type "<class \'set\'>" was passed.Value "set()" should be not empty."""]),
     (Annotated[dict, NotEmpty()], field(default_factory=lambda: {1: 1, 2: 2, 3: 3}), True, []),
     (Annotated[dict, NotEmpty()], field(default_factory=lambda: {}), False, ["""Expected that attr "test_variable" would be of type "typing.Annotated[dict, NotEmpty()]". Value {}, of type "<class \'dict\'>" was passed.Value "{}" should be not empty."""]),
-    (Annotated[str, Options({'opt_1', 'opt_2'})], 'opt_1', True, []),
-    (Annotated[str, Options({'opt_1', 'opt_2'})], 'opt_2', True, []),
-    (Annotated[str, Options({'opt_1', 'opt_2'})], 'bad_opt', False, ["""Expected that attr "test_variable" would be of type "typing.Annotated[str, Options(opts={\'opt_1\', \'opt_2\'})]". Value bad_opt, of type "<class \'str\'>" was passed.Value "bad_opt" should be chosen from this options: {\'opt_1\', \'opt_2\'}"""]),
-    (Annotated[int, Options({1, 2})], 1, True, []),
-    (Annotated[int, Options({1, 2})], 2, True, []),
-    (Annotated[int, Options({1, 2})], 100, False, ["""Expected that attr "test_variable" would be of type "typing.Annotated[int, Options(opts={1, 2})]". Value 100, of type "<class \'int\'>" was passed.Value "100" should be chosen from this options: {1, 2}"""]),
+    (Annotated[str, Options(['opt_1', 'opt_2'])], 'opt_1', True, []),
+    (Annotated[str, Options(['opt_1', 'opt_2'])], 'opt_2', True, []),
+    (Annotated[str, Options(['opt_1', 'opt_2'])], 'bad_opt', False, ["""Expected that attr "test_variable" would be of type "typing.Annotated[str, Options(opts=[\'opt_1\', \'opt_2\'])]". Value bad_opt, of type "<class \'str\'>" was passed.Value "bad_opt" should be chosen from this options: [\'opt_1\', \'opt_2\']"""]),
+    (Annotated[int, Options([1, 2])], 1, True, []),
+    (Annotated[int, Options([1, 2])], 2, True, []),
+    (Annotated[int, Options([1, 2])], 100, False, ["""Expected that attr "test_variable" would be of type "typing.Annotated[int, Options(opts=[1, 2])]". Value 100, of type "<class \'int\'>" was passed.Value "100" should be chosen from this options: [1, 2]"""]),
     (Annotated[str, LimitedLength(2)], 'ok', True, []),
     (Annotated[str, LimitedLength(2)], '!', True, []),
     (Annotated[str, LimitedLength(2)], 'not', False, ["""Expected that attr "test_variable" would be of type "typing.Annotated[str, LimitedLength(length=2)]". Value not, of type "<class \'str\'>" was passed.Value "not" length should be <= 2. Actual is 3"""]),

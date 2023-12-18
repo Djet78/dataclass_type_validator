@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from collections.abc import Sized
+from collections.abc import Collection, Sized
 from dataclasses import dataclass
 from typing import Any
 
@@ -32,7 +32,7 @@ class NotEmpty(ValidatorBase):
 
 @dataclass
 class Options(ValidatorBase):
-    opts: set[str | int]
+    opts: Collection[str | int]
 
     def validate(self, value: str | int) -> tuple[bool, str]:
         res = value in self.opts
